@@ -1,20 +1,23 @@
-// This setup uses Hardhat Ignition to manage smart contract deployments.
-// Learn more about it at https://hardhat.org/ignition
+async function main() {
+  // Get the contract factory
+  const [deployer] = await ethers.getSigners();
 
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+  console.log(`Deploying contracts with the account: ${deployer.address}`);
 
-const JAN_1ST_2030 = 1893456000;
-const ONE_GWEI: bigint = 1_000_000_000n;
+  // Deploy the contract
+  const StudentManagement = await ethers.getContractFactory(
+    "StudentManagement"
+  );
+  const studentManagement = await StudentManagement.deploy();
 
-const LockModule = buildModule("LockModule", (m) => {
-  const unlockTime = m.getParameter("unlockTime", JAN_1ST_2030);
-  const lockedAmount = m.getParameter("lockedAmount", ONE_GWEI);
+  console.log(
+    `StudentManagement contract deployed to: ${studentManagement.address}`
+  );
+}
 
-  const lock = m.contract("Lock", [unlockTime], {
-    value: lockedAmount,
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
   });
-
-  return { lock };
-});
-
-export default LockModule;
